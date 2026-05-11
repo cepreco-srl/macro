@@ -324,7 +324,7 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
       📦 Combos <span class="tb-num">7 · 14 · 21 · 28</span>
     </button>
     <button class="tab-btn" onclick="scrollTo('carta',this)">
-      🍽 A la carta <span class="tb-num">42 platos</span>
+      🍽 A la carta <span class="tb-num">37 platos</span>
     </button>
     <button class="tab-btn" onclick="scrollTo('especiales',this)">
       ✨ Especiales <span class="tb-num">14 platos</span>
@@ -669,7 +669,7 @@ const PLATOS = [
   {id:'m5', plan:'muscle', tipo:'Almuerzo', nombre:'Arroz con pollo casero',                    desc:'Muslos de pollo (200g) en caldo con arroz, morrón, arvejas y cebolla.'},
   {id:'m6', plan:'muscle', tipo:'Cena',     nombre:'Milanesa al horno con puré de batata',      desc:'Milanesa de carne (200g) al horno + puré de batata + brócoli salteado con ajo.'},
   {id:'m7', plan:'muscle', tipo:'Almuerzo', nombre:'Garbanzos guisados con carne',              desc:'Garbanzos (200g) con carne magra, tomate, pimentón y comino. Arroz integral.'},
-  {id:'m8', plan:'muscle', tipo:'Cena',     nombre:'Merluza en salsa de tomate con polenta',    desc:'Filete de merluza (200g) en salsa de tomate casera. Polenta cremosa (150g).'},
+  {id:'m8', plan:'muscle', tipo:'Cena',     nombre:'Costillitas de cerdo con puré de calabaza', desc:'Costillitas de cerdo (250g) al horno doradas. Puré cremoso de calabaza.'},
   {id:'m9', plan:'muscle', tipo:'Almuerzo', nombre:'Guiso de porotos con chorizo colorado',     desc:'Porotos negros (200g) con chorizo colorado, zapallo y zanahoria. Arroz blanco.'},
   {id:'m10',plan:'muscle', tipo:'Cena',     nombre:'Pechuga en salsa de champiñones',           desc:'Pechuga (200g) en salsa cremosa de champiñones y cebolla. Arroz blanco (150g).'},
   {id:'m11',plan:'muscle', tipo:'Almuerzo', nombre:'Carne estofada con papas rústicas',         desc:'Paleta o roast beef (200g) estofado con papas y caldo. Ideal para el freezer.'},
@@ -679,11 +679,9 @@ const PLATOS = [
 
   // REDUCCIÓN
   {id:'f1', plan:'fat', tipo:'Almuerzo', nombre:'Pechuga al horno con verduras asadas',        desc:'Pechuga (180g) + morrón, zapallito y cebolla asados. 1 papa mediana. Sin salsas grasas.'},
-  {id:'f2', plan:'fat', tipo:'Cena',     nombre:'Merluza en salsa de tomate con brócoli',      desc:'Merluza (200g) en salsa de tomate liviana. Brócoli y coliflor asados. Sin carbos.'},
   {id:'f3', plan:'fat', tipo:'Almuerzo', nombre:'Bowl caliente de atún y garbanzos',           desc:'2 latas de atún, 100g garbanzos, tomate asado, cebolla morada, pimentón. Tibio.'},
   {id:'f4', plan:'fat', tipo:'Cena',     nombre:'Pollo al limón con crucíferas',               desc:'Pechuga (180g) al horno con limón y ajo. Brócoli y coliflor asados (300g). Sin carbos.'},
   {id:'f5', plan:'fat', tipo:'Almuerzo', nombre:'Pollo salteado con verduras y arroz',         desc:'Pechuga en tiras (180g) con zapallito, morrón y cebolla. Solo 80g arroz integral.'},
-  {id:'f6', plan:'fat', tipo:'Cena',     nombre:'Merluza al horno con espinaca salteada',      desc:'Merluza (200g) al horno con limón. Espinaca salteada con ajo (300g). Sin carbos.'},
   {id:'f7', plan:'fat', tipo:'Almuerzo', nombre:'Carne magra al horno con batata',             desc:'Peceto (180g) al horno + batata y zanahoria asadas. Poca grasa, alta saciedad.'},
   {id:'f8', plan:'fat', tipo:'Cena',     nombre:'Pollo desmenuzado en salsa de tomate',        desc:'Pechuga desmenuzada (180g) en salsa de tomate liviana con zapallitos. Sin carbos.'},
   {id:'f9', plan:'fat', tipo:'Almuerzo', nombre:'Lentejas con verduras',                       desc:'Lentejas (150g) con zanahoria, apio, zapallo y puerro. Alta fibra, sin arroz.'},
@@ -697,13 +695,10 @@ const PLATOS = [
   {id:'t1', plan:'maint', tipo:'Almuerzo', nombre:'Arroz con pollo casero',                    desc:'Muslos de pollo (170g) en caldo con arroz, morrón, arvejas y cebolla.'},
   {id:'t2', plan:'maint', tipo:'Cena',     nombre:'Tarta de verduras con queso',               desc:'Zapallito, cebolla y morrón con queso en masa casera. Porción individual.'},
   {id:'t3', plan:'maint', tipo:'Almuerzo', nombre:'Guiso de carne con papa y zanahoria',        desc:'Carne vacuna (170g) guisada con papa, zanahoria, arvejas y tomate.'},
-  {id:'t4', plan:'maint', tipo:'Cena',     nombre:'Merluza en salsa con puré de batata',        desc:'Merluza (170g) en salsa de tomate casera. Puré de batata (130g).'},
   {id:'t5', plan:'maint', tipo:'Almuerzo', nombre:'Guiso de porotos con chorizo',               desc:'Porotos negros (170g) con chorizo colorado, zapallo y zanahoria. Muy saciante.'},
   {id:'t6', plan:'maint', tipo:'Cena',     nombre:'Pollo al horno con papas y morrón',          desc:'Cuarto trasero (170g) al horno con papas y morrón bañados en jugo de cocción.'},
   {id:'t7', plan:'maint', tipo:'Almuerzo', nombre:'Lentejas con arroz',                         desc:'Lentejas (150g) + arroz integral (100g) + zanahoria y puerro. Proteína vegetal completa.'},
   {id:'t8', plan:'maint', tipo:'Cena',     nombre:'Carne al horno con batata y zanahoria',      desc:'Nalga o roast beef (170g) al horno con batata y zanahoria.'},
-  {id:'t9', plan:'maint', tipo:'Almuerzo', nombre:'Locro liviano',                              desc:'Maíz blanco, porotos, zapallo, carne magra y chorizo. Versión sin tanta grasa.'},
-  {id:'t10',plan:'maint', tipo:'Cena',     nombre:'Merluza con salsa criolla y papas',          desc:'Merluza (170g) al horno con salsa criolla caliente y papas al vapor (130g).'},
   {id:'t11',plan:'maint', tipo:'Almuerzo', nombre:'Pollo al horno con batata y zapallo',        desc:'Cuarto trasero (170g) al horno con batata, zapallo y cebolla morada.'},
   {id:'t12',plan:'maint', tipo:'Cena',     nombre:'Tarta de atún y verduras',                   desc:'2 latas de atún, morrón, cebolla y huevo en masa integral. Porción individual.'},
   {id:'t13',plan:'maint', tipo:'Almuerzo', nombre:'Estofado de carne con papa',                 desc:'Paleta o roast beef (170g) estofado con papa y zanahoria. El colágeno lo hace perfecto.'},
