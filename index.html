@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MACRO — Viandas con Objetivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,700;0,800;0,900;1,800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --black:#08080A;--dark:#0E0E10;--card:#141416;--card2:#1C1C1E;
+  --border:#26262A;--muted:#3A3A3E;--text2:#70707A;--text1:#C4C4CE;--white:#F0EEF8;
+  --green:#BCFF5E;--green2:#8ED43A;--orange:#FF7A35;--blue:#4AADFF;--gold:#FFD166;
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--black);color:var(--text1);overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;z-index:1000;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size:200px 200px;}
+
+.wrap{position:relative;z-index:2;max-width:1140px;margin:0 auto;padding:0 24px;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:14px 0;transition:all .3s;}
+.nav.scrolled{background:rgba(8,8,10,.93);border-bottom:1px solid var(--border);backdrop-filter:blur(16px);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1140px;margin:0 auto;padding:0 24px;}
+.nav-logo{font-family:'Barlow Condensed',sans-serif;font-size:1.9rem;font-weight:900;color:var(--white);letter-spacing:-.02em;}
+.nav-logo span{color:var(--green);}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:8px 14px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;cursor:pointer;transition:all .2s;border:none;background:none;}
+.nav-link:hover{color:var(--white);background:rgba(255,255,255,.06);}
+.nav-link.active{color:var(--green);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.cart-btn{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);padding:9px 16px;border-radius:50px;cursor:pointer;font-size:13px;font-weight:600;transition:all .2s;}
+.cart-btn:hover{border-color:var(--green);color:var(--green);}
+.cart-badge{background:var(--green);color:var(--black);font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.cart-badge.bump{animation:bump .3s ease;}
+@keyframes bump{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+
+/* HERO */
+.hero{position:relative;min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:64px;overflow:hidden;}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 65% 35%,rgba(188,255,94,.07) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 15% 80%,rgba(74,173,255,.05) 0%,transparent 55%);}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(188,255,94,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(188,255,94,.04) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(to bottom,transparent,black 25%,black 75%,transparent);}
+.hero-bg-word{position:absolute;right:-20px;bottom:-40px;font-family:'Barlow Condensed',sans-serif;font-size:clamp(12rem,22vw,20rem);font-weight:900;line-height:1;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1px rgba(188,255,94,.05);pointer-events:none;user-select:none;}
+.hero-content{padding-top:88px;}
+.pill{display:inline-flex;align-items:center;gap:8px;background:rgba(188,255,94,.1);border:1px solid rgba(188,255,94,.25);padding:6px 14px;border-radius:50px;font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--green);margin-bottom:24px;animation:up .6s ease both;}
+.dot-live{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(3.5rem,9vw,8rem);font-weight:900;line-height:.92;letter-spacing:-.03em;color:var(--white);text-transform:uppercase;margin-bottom:16px;animation:up .7s .1s ease both;}
+.hero-title em{font-style:italic;color:var(--green);}
+.hero-sub{font-size:clamp(.9rem,1.5vw,1.05rem);color:var(--text2);max-width:460px;line-height:1.65;margin-bottom:32px;animation:up .7s .2s ease both;}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;animation:up .7s .3s ease both;margin-bottom:48px;}
+.btn-p{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:var(--black);padding:13px 24px;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .2s;}
+.btn-p:hover{filter:brightness(1.1);transform:translateY(-2px);}
+.btn-o{display:inline-flex;align-items:center;gap:7px;background:transparent;color:var(--text1);padding:13px 24px;border-radius:8px;border:1px solid var(--border);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .2s;}
+.btn-o:hover{border-color:var(--text1);color:var(--white);}
+.hero-stats{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:rgba(255,255,255,.02);animation:up .7s .4s ease both;backdrop-filter:blur(8px);}
+.hstat{flex:1;padding:16px 12px;text-align:center;border-right:1px solid var(--border);}
+.hstat:last-child{border-right:none;}
+.hsn{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:900;color:var(--white);display:block;}
+.hsn.g{color:var(--green);}.hsn.o{color:var(--orange);}.hsn.b{color:var(--blue);}
+.hsl{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-top:1px;}
+@keyframes up{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+/* SECTION NAV TABS */
+.section-tabs{position:sticky;top:54px;z-index:400;background:rgba(8,8,10,.92);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);}
+.tabs-inner{display:flex;max-width:1140px;margin:0 auto;padding:0 24px;}
+.tab-btn{flex:1;max-width:260px;padding:16px 20px;border:none;background:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;display:flex;align-items:center;gap:8px;justify-content:center;}
+.tab-btn:hover{color:var(--text1);}
+.tab-btn.active{color:var(--white);border-bottom-color:var(--green);}
+.tab-btn .tb-num{background:var(--muted);color:var(--text2);font-size:11px;font-weight:800;padding:2px 7px;border-radius:50px;}
+.tab-btn.active .tb-num{background:rgba(188,255,94,.15);color:var(--green);}
+
+/* SECTION HEADERS */
+.sec{padding:72px 0;}
+.sec-eye{font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.sec-eye::after{content:'';flex:1;max-width:80px;height:1px;background:var(--border);}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:900;text-transform:uppercase;color:var(--white);line-height:.95;letter-spacing:-.02em;margin-bottom:8px;}
+.sec-sub{font-size:14px;color:var(--text2);line-height:1.55;max-width:600px;}
+
+/* ─────────────────────────────────────────
+   SECTION 1: COMBOS
+───────────────────────────────────────── */
+.combos-grid{display:flex;flex-direction:column;gap:24px;margin-top:36px;}
+
+.combo-plan{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .3s;}
+.combo-plan.muscle:hover{border-color:rgba(188,255,94,.25);}
+.combo-plan.fat:hover{border-color:rgba(255,122,53,.25);}
+.combo-plan.maint:hover{border-color:rgba(74,173,255,.25);}
+
+.cp-stripe{height:3px;}
+.muscle .cp-stripe{background:linear-gradient(90deg,var(--green2),var(--green));}
+.fat .cp-stripe{background:linear-gradient(90deg,#D05000,var(--orange));}
+.maint .cp-stripe{background:linear-gradient(90deg,#1A70BC,var(--blue));}
+
+.cp-header{display:flex;align-items:flex-start;gap:16px;padding:24px 24px 20px;}
+.cp-icon{width:54px;height:54px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;flex-shrink:0;}
+.muscle .cp-icon{background:rgba(188,255,94,.12);}
+.fat .cp-icon{background:rgba(255,122,53,.12);}
+.maint .cp-icon{background:rgba(74,173,255,.12);}
+.cp-meta{flex:1;}
+.cp-tag{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px;}
+.muscle .cp-tag{color:var(--green);}.fat .cp-tag{color:var(--orange);}.maint .cp-tag{color:var(--blue);}
+.cp-name{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:900;color:var(--white);text-transform:uppercase;line-height:1;margin-bottom:6px;}
+.cp-desc{font-size:13px;color:var(--text2);line-height:1.55;max-width:560px;}
+.cp-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.cp-pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;}
+.muscle .cp-pill{background:rgba(188,255,94,.1);color:var(--green);border:1px solid rgba(188,255,94,.15);}
+.fat .cp-pill{background:rgba(255,122,53,.1);color:var(--orange);border:1px solid rgba(255,122,53,.15);}
+.maint .cp-pill{background:rgba(74,173,255,.1);color:var(--blue);border:1px solid rgba(74,173,255,.15);}
+
+/* Combo options row */
+.cp-options{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--border);}
+.combo-opt{padding:20px 18px;border-right:1px solid var(--border);position:relative;transition:background .2s;}
+.combo-opt:last-child{border-right:none;}
+.combo-opt:hover{background:rgba(255,255,255,.03);}
+
+.co-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px;}
+.co-viandas{font-family:'Barlow Condensed',sans-serif;font-size:2.4rem;font-weight:900;color:var(--white);line-height:1;}
+.co-viandas-label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-top:2px;}
+
+.co-badge{font-size:10px;font-weight:800;padding:3px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:.05em;align-self:flex-start;}
+.co-badge.base{background:var(--muted);color:var(--text2);}
+.co-badge.d10{background:rgba(188,255,94,.15);color:var(--green);}
+.co-badge.d15{background:rgba(255,122,53,.15);color:var(--orange);}
+.co-badge.d20{background:rgba(74,173,255,.15);color:var(--blue);}
+.co-badge.best{background:var(--gold);color:var(--black);}
+
+.co-period{font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.4;}
+.co-period strong{color:var(--text1);}
+
+.co-price-orig{font-size:11px;color:var(--muted);text-decoration:line-through;min-height:16px;}
+.co-price{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:900;color:var(--white);line-height:1;margin-bottom:2px;}
+.co-saving{font-size:11px;color:var(--gold);font-weight:600;min-height:16px;margin-bottom:14px;}
+
+.co-btn{width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;transition:all .2s;}
+.muscle .co-btn{background:rgba(188,255,94,.12);color:var(--green);}
+.muscle .co-btn:hover{background:var(--green);color:var(--black);}
+.fat .co-btn{background:rgba(255,122,53,.12);color:var(--orange);}
+.fat .co-btn:hover{background:var(--orange);color:var(--black);}
+.maint .co-btn{background:rgba(74,173,255,.12);color:var(--blue);}
+.maint .co-btn:hover{background:var(--blue);color:var(--black);}
+
+/* best combo highlight */
+.combo-opt.is-best{background:rgba(255,209,102,.03);}
+.combo-opt.is-best::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);}
+
+/* ─────────────────────────────────────────
+   SECTION 2: A LA CARTA
+───────────────────────────────────────── */
+.carta-filters{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 24px;}
+.filter-btn{padding:8px 16px;border-radius:50px;border:1px solid var(--border);background:none;cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);transition:all .2s;}
+.filter-btn:hover{border-color:var(--text1);color:var(--text1);}
+.filter-btn.active{color:var(--black);border-color:transparent;}
+.filter-btn.all.active{background:var(--white);color:var(--black);}
+.filter-btn.muscle.active{background:var(--green);}
+.filter-btn.fat.active{background:var(--orange);}
+.filter-btn.maint.active{background:var(--blue);}
+
+.carta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+
+.plato-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;transition:all .2s;position:relative;overflow:hidden;}
+.plato-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:0;}
+.plato-card.muscle::before{background:var(--green);}
+.plato-card.fat::before{background:var(--orange);}
+.plato-card.maint::before{background:var(--blue);}
+.plato-card:hover{border-color:rgba(255,255,255,.1);transform:translateY(-2px);}
+
+.plato-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.plato-info{flex:1;}
+.plato-plan-tag{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:4px;}
+.muscle .plato-plan-tag{color:var(--green);}.fat .plato-plan-tag{color:var(--orange);}.maint .plato-plan-tag{color:var(--blue);}
+.plato-name{font-size:14px;font-weight:600;color:var(--white);line-height:1.3;}
+.plato-meal-type{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;color:var(--text2);background:rgba(255,255,255,.06);padding:3px 8px;border-radius:50px;margin-top:5px;}
+
+.plato-desc{font-size:12px;color:var(--text2);line-height:1.5;}
+
+.plato-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:2px;}
+.plato-price{font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:900;color:var(--white);}
+.plato-qty{display:flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.pq-btn{background:var(--card2);border:none;cursor:pointer;color:var(--text1);width:30px;height:30px;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.pq-btn:hover{background:var(--muted);}
+.pq-val{width:32px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:var(--white);border-left:1px solid var(--border);border-right:1px solid var(--border);}
+.plato-add{padding:7px 14px;border-radius:7px;border:none;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;transition:all .2s;}
+.muscle .plato-add{background:rgba(188,255,94,.12);color:var(--green);}
+.muscle .plato-add:hover{background:var(--green);color:var(--black);}
+.fat .plato-add{background:rgba(255,122,53,.12);color:var(--orange);}
+.fat .plato-add:hover{background:var(--orange);color:var(--black);}
+.maint .plato-add{background:rgba(74,173,255,.12);color:var(--blue);}
+.maint .plato-add:hover{background:var(--blue);color:var(--black);}
+
+/* ─── CART ─── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(6px);}
+.overlay.open{opacity:1;pointer-events:all;}
+.cart-sidebar{position:fixed;top:0;right:0;width:min(420px,100vw);height:100vh;background:var(--dark);border-left:1px solid var(--border);z-index:1000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .38s cubic-bezier(.16,1,.3,1);}
+.cart-sidebar.open{transform:translateX(0);}
+.cs-head{display:flex;align-items:flex-start;justify-content:space-between;padding:22px 20px;border-bottom:1px solid var(--border);}
+.cs-head-info h2{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:800;text-transform:uppercase;color:var(--white);}
+.cs-head-info p{font-size:12px;color:var(--text2);margin-top:2px;}
+.close-btn{background:var(--card);border:1px solid var(--border);color:var(--text1);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.close-btn:hover{border-color:rgba(255,100,100,.5);color:#FF6464;}
+
+.cs-disc-bar{display:none;padding:10px 18px;background:rgba(255,209,102,.07);border-bottom:1px solid rgba(255,209,102,.15);font-size:12px;color:var(--gold);font-weight:600;align-items:center;gap:6px;justify-content:center;}
+.cs-disc-bar.show{display:flex;}
+
+.cs-progress{padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2);}
+.prog-wrap{background:var(--muted);border-radius:50px;height:5px;margin-bottom:7px;overflow:hidden;}
+.prog-bar{height:5px;border-radius:50px;background:linear-gradient(90deg,var(--green2),var(--green));transition:width .4s ease;}
+.prog-text{font-size:11px;color:var(--text2);display:flex;justify-content:space-between;}
+.prog-text .hl{color:var(--green);font-weight:600;}
+
+.cs-items{flex:1;overflow-y:auto;padding:14px 20px;}
+.cs-empty{text-align:center;padding:48px 20px;color:var(--text2);font-size:14px;}
+.cs-empty .ei{font-size:2.5rem;display:block;margin-bottom:10px;}
+
+.cart-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border);animation:slideIn .25s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+.ci-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ci-info{flex:1;}
+.ci-name{font-size:13px;font-weight:600;color:var(--white);line-height:1.3;}
+.ci-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+.ci-qty{display:flex;align-items:center;border:1px solid var(--border);border-radius:6px;overflow:hidden;flex-shrink:0;}
+.ciq-btn{background:var(--card);border:none;cursor:pointer;color:var(--text1);width:26px;height:26px;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.ciq-btn:hover{background:var(--muted);}
+.ciq-val{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--white);border-left:1px solid var(--border);border-right:1px solid var(--border);}
+.ci-right{text-align:right;flex-shrink:0;}
+.ci-price{font-size:13px;font-weight:700;color:var(--white);}
+.ci-del{display:block;background:none;border:none;cursor:pointer;color:var(--muted);font-size:12px;margin-top:5px;padding:0;transition:color .15s;}
+.ci-del:hover{color:#FF6464;}
+
+.cs-footer{padding:18px 20px;border-top:1px solid var(--border);}
+.savings-pill{display:none;padding:9px 14px;border-radius:8px;background:rgba(255,209,102,.08);border:1px solid rgba(255,209,102,.2);font-size:12px;color:var(--gold);font-weight:600;text-align:center;margin-bottom:12px;}
+.savings-pill.show{display:block;}
+.total-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;}
+.tl{font-size:12px;color:var(--text2);}
+.ta{font-family:'Barlow Condensed',sans-serif;font-size:2.2rem;font-weight:900;color:var(--white);}
+.tv{font-size:11px;color:var(--muted);margin-bottom:16px;}
+.ck-btns{display:flex;flex-direction:column;gap:9px;}
+.btn-pay{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:9px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .2s;}
+.btn-pay.online{background:var(--green);color:var(--black);}
+.btn-pay.wpp{background:#25D366;color:#fff;}
+.btn-pay:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.ck-note{font-size:11px;color:var(--muted);text-align:center;margin-top:9px;line-height:1.5;}
+
+/* MOBILE BAR */
+.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:400;padding:10px 20px;background:rgba(8,8,10,.95);border-top:1px solid var(--border);backdrop-filter:blur(12px);}
+.mob-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.mob-info{font-size:13px;color:var(--text1);}
+.mob-btn{background:var(--green);color:var(--black);border:none;border-radius:7px;padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:40px 0;}
+.fi{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.fl{font-family:'Barlow Condensed',sans-serif;font-size:1.7rem;font-weight:900;color:var(--white);}
+.fl span{color:var(--green);}
+.ft{font-size:12px;color:var(--muted);margin-top:4px;}
+.fw{display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:8px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.2);color:#25D366;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;}
+.fw:hover{background:rgba(37,211,102,.18);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--card);border:1px solid var(--border);color:var(--white);padding:11px 22px;border-radius:50px;font-size:13px;font-weight:500;z-index:2000;opacity:0;pointer-events:none;transition:all .3s;white-space:nowrap;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:800px){
+  .cp-options{grid-template-columns:repeat(2,1fr);}
+  .nav-links{display:none;}
+  .mob-bar{display:block;}
+}
+@media(max-width:520px){
+  .carta-grid{grid-template-columns:1fr;}
+  .cp-options{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">MACRO<span>.</span></div>
+    <div class="nav-links">
+      <a class="nav-link" href="#combos">Combos</a>
+      <a class="nav-link" href="#carta">A la carta</a>
+    </div>
+    <div class="nav-right">
+      <button class="cart-btn" onclick="toggleCart()">
+        🛒 <span id="cartBadge" class="cart-badge">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div><div class="hero-grid"></div>
+  <div class="hero-bg-word">MACRO</div>
+  <div class="wrap">
+    <div class="hero-content">
+      <div class="pill"><span class="dot-live"></span> Viandas con objetivo · Aptas freezer</div>
+      <h1 class="hero-title">Comé con<br><em>propósito.</em></h1>
+      <p class="hero-sub">Combos armados o platos a elección. Tres planes según tu objetivo, todo listo para el freezer.</p>
+      <div class="hero-ctas">
+        <a href="#combos" class="btn-p">Ver combos →</a>
+        <a href="#carta" class="btn-o">A la carta</a>
+        <a href="https://wa.me/5491100000000" target="_blank" class="btn-o">💬 Consultar</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="hsn g">$9.500</span><div class="hsl">Por vianda</div></div>
+        <div class="hstat"><span class="hsn o">20%</span><div class="hsl">Descuento máx.</div></div>
+        <div class="hstat"><span class="hsn">30</span><div class="hsl">Días en freezer</div></div>
+        <div class="hstat"><span class="hsn b">3</span><div class="hsl">Planes</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION TABS -->
+<div class="section-tabs">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="scrollTo('combos',this)">
+      📦 Combos <span class="tb-num">7 · 14 · 21 · 28</span>
+    </button>
+    <button class="tab-btn" onclick="scrollTo('carta',this)">
+      🍽 A la carta <span class="tb-num">42 platos</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     SECCIÓN 1: COMBOS
+══════════════════════════════ -->
+<section class="sec" id="combos">
+  <div class="wrap">
+    <div class="sec-eye" style="color:var(--green)">📦 Combos armados</div>
+    <h2 class="sec-title">Elegís el plan<br>y la cantidad</h2>
+    <p class="sec-sub">Combos semanales con el menú completo ya armado. Cuanto más pedís, más ahorrás. Un solo click y listo.</p>
+
+    <div class="combos-grid">
+
+      <!-- MASA MUSCULAR -->
+      <div class="combo-plan muscle">
+        <div class="cp-stripe"></div>
+        <div class="cp-header">
+          <div class="cp-icon">💪</div>
+          <div class="cp-meta">
+            <div class="cp-tag">Plan 1 · Masa Muscular</div>
+            <div class="cp-name">Ganar músculo</div>
+            <div class="cp-desc">Superávit calórico con alta proteína. Guisos, estofados y platos al horno diseñados para crecer y recuperar. Armados con los mejores platos del menú semanal.</div>
+            <div class="cp-pills">
+              <span class="cp-pill">~3000 kcal/día</span>
+              <span class="cp-pill">Proteína alta</span>
+              <span class="cp-pill">Carbos altos</span>
+            </div>
+          </div>
+        </div>
+        <div class="cp-options">
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">7</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge base">Base</span>
+            </div>
+            <div class="co-period"><strong>Media semana</strong><br>Almuerzos + cenas lunes a miércoles + un día extra</div>
+            <div class="co-price-orig"></div>
+            <div class="co-price">$66.500</div>
+            <div class="co-saving"></div>
+            <button class="co-btn" onclick="addCombo('muscle',7,'Combo Masa Muscular 7 viandas',0)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">14</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d10">10% OFF</span>
+            </div>
+            <div class="co-period"><strong>1 semana completa</strong><br>Almuerzo y cena todos los días</div>
+            <div class="co-price-orig">$133.000</div>
+            <div class="co-price">$119.700</div>
+            <div class="co-saving">Ahorrás $13.300</div>
+            <button class="co-btn" onclick="addCombo('muscle',14,'Combo Masa Muscular 14 viandas',0.10)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">21</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d15">15% OFF</span>
+            </div>
+            <div class="co-period"><strong>Semana y media</strong><br>Ideal para el primer mes con stock</div>
+            <div class="co-price-orig">$199.500</div>
+            <div class="co-price">$169.575</div>
+            <div class="co-saving">Ahorrás $29.925</div>
+            <button class="co-btn" onclick="addCombo('muscle',21,'Combo Masa Muscular 21 viandas',0.15)">Agregar</button>
+          </div>
+          <div class="combo-opt is-best">
+            <div class="co-top">
+              <div><div class="co-viandas">28</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge best">20% OFF</span>
+            </div>
+            <div class="co-period"><strong>2 semanas completas</strong><br>El mejor precio, freezer cargado</div>
+            <div class="co-price-orig">$266.000</div>
+            <div class="co-price">$212.800</div>
+            <div class="co-saving">Ahorrás $53.200</div>
+            <button class="co-btn" onclick="addCombo('muscle',28,'Combo Masa Muscular 28 viandas',0.20)">Agregar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- REDUCCIÓN GRASA -->
+      <div class="combo-plan fat">
+        <div class="cp-stripe"></div>
+        <div class="cp-header">
+          <div class="cp-icon">🔥</div>
+          <div class="cp-meta">
+            <div class="cp-tag">Plan 2 · Reducción de Grasa</div>
+            <div class="cp-name">Perder grasa</div>
+            <div class="cp-desc">Déficit calórico con proteína alta. Verduras asadas, cazuelas y caldos para quemar grasa preservando músculo sin pasar hambre.</div>
+            <div class="cp-pills">
+              <span class="cp-pill">~1700 kcal/día</span>
+              <span class="cp-pill">Proteína alta</span>
+              <span class="cp-pill">Fibra alta</span>
+            </div>
+          </div>
+        </div>
+        <div class="cp-options">
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">7</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge base">Base</span>
+            </div>
+            <div class="co-period"><strong>Media semana</strong><br>Almuerzos + cenas lunes a miércoles + un día extra</div>
+            <div class="co-price-orig"></div>
+            <div class="co-price">$66.500</div>
+            <div class="co-saving"></div>
+            <button class="co-btn" onclick="addCombo('fat',7,'Combo Reducción 7 viandas',0)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">14</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d10">10% OFF</span>
+            </div>
+            <div class="co-period"><strong>1 semana completa</strong><br>Almuerzo y cena todos los días</div>
+            <div class="co-price-orig">$133.000</div>
+            <div class="co-price">$119.700</div>
+            <div class="co-saving">Ahorrás $13.300</div>
+            <button class="co-btn" onclick="addCombo('fat',14,'Combo Reducción 14 viandas',0.10)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">21</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d15">15% OFF</span>
+            </div>
+            <div class="co-period"><strong>Semana y media</strong><br>Ideal para el primer mes con stock</div>
+            <div class="co-price-orig">$199.500</div>
+            <div class="co-price">$169.575</div>
+            <div class="co-saving">Ahorrás $29.925</div>
+            <button class="co-btn" onclick="addCombo('fat',21,'Combo Reducción 21 viandas',0.15)">Agregar</button>
+          </div>
+          <div class="combo-opt is-best">
+            <div class="co-top">
+              <div><div class="co-viandas">28</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge best">20% OFF</span>
+            </div>
+            <div class="co-period"><strong>2 semanas completas</strong><br>El mejor precio, freezer cargado</div>
+            <div class="co-price-orig">$266.000</div>
+            <div class="co-price">$212.800</div>
+            <div class="co-saving">Ahorrás $53.200</div>
+            <button class="co-btn" onclick="addCombo('fat',28,'Combo Reducción 28 viandas',0.20)">Agregar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MANTENIMIENTO -->
+      <div class="combo-plan maint">
+        <div class="cp-stripe"></div>
+        <div class="cp-header">
+          <div class="cp-icon">⚖️</div>
+          <div class="cp-meta">
+            <div class="cp-tag">Plan 3 · Mantenimiento</div>
+            <div class="cp-name">Mantener el balance</div>
+            <div class="cp-desc">Macros balanceados y variedad sostenible. Guisos, tartas y platos al horno para mantener el peso sin aburrirte semana a semana.</div>
+            <div class="cp-pills">
+              <span class="cp-pill">~2100 kcal/día</span>
+              <span class="cp-pill">Balanceado</span>
+              <span class="cp-pill">Variado</span>
+            </div>
+          </div>
+        </div>
+        <div class="cp-options">
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">7</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge base">Base</span>
+            </div>
+            <div class="co-period"><strong>Media semana</strong><br>Almuerzos + cenas lunes a miércoles + un día extra</div>
+            <div class="co-price-orig"></div>
+            <div class="co-price">$66.500</div>
+            <div class="co-saving"></div>
+            <button class="co-btn" onclick="addCombo('maint',7,'Combo Mantenimiento 7 viandas',0)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">14</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d10">10% OFF</span>
+            </div>
+            <div class="co-period"><strong>1 semana completa</strong><br>Almuerzo y cena todos los días</div>
+            <div class="co-price-orig">$133.000</div>
+            <div class="co-price">$119.700</div>
+            <div class="co-saving">Ahorrás $13.300</div>
+            <button class="co-btn" onclick="addCombo('maint',14,'Combo Mantenimiento 14 viandas',0.10)">Agregar</button>
+          </div>
+          <div class="combo-opt">
+            <div class="co-top">
+              <div><div class="co-viandas">21</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge d15">15% OFF</span>
+            </div>
+            <div class="co-period"><strong>Semana y media</strong><br>Ideal para el primer mes con stock</div>
+            <div class="co-price-orig">$199.500</div>
+            <div class="co-price">$169.575</div>
+            <div class="co-saving">Ahorrás $29.925</div>
+            <button class="co-btn" onclick="addCombo('maint',21,'Combo Mantenimiento 21 viandas',0.15)">Agregar</button>
+          </div>
+          <div class="combo-opt is-best">
+            <div class="co-top">
+              <div><div class="co-viandas">28</div><div class="co-viandas-label">viandas</div></div>
+              <span class="co-badge best">20% OFF</span>
+            </div>
+            <div class="co-period"><strong>2 semanas completas</strong><br>El mejor precio, freezer cargado</div>
+            <div class="co-price-orig">$266.000</div>
+            <div class="co-price">$212.800</div>
+            <div class="co-saving">Ahorrás $53.200</div>
+            <button class="co-btn" onclick="addCombo('maint',28,'Combo Mantenimiento 28 viandas',0.20)">Agregar</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     SECCIÓN 2: A LA CARTA
+══════════════════════════════ -->
+<section class="sec" id="carta" style="border-top:1px solid var(--border);padding-top:72px;">
+  <div class="wrap">
+    <div class="sec-eye" style="color:var(--orange)">🍽 A la carta</div>
+    <h2 class="sec-title">Armá tu propia<br><span style="color:var(--orange)">selección</span></h2>
+    <p class="sec-sub">Elegís exactamente qué platos querés. Podés mezclar los tres planes sin restricción. Los descuentos se acumulan con lo que ya tengas en el carrito.</p>
+
+    <div class="carta-filters">
+      <button class="filter-btn all active" onclick="filterCarta('all',this)">Todos los platos</button>
+      <button class="filter-btn muscle" onclick="filterCarta('muscle',this)">💪 Masa Muscular</button>
+      <button class="filter-btn fat" onclick="filterCarta('fat',this)">🔥 Reducción de Grasa</button>
+      <button class="filter-btn maint" onclick="filterCarta('maint',this)">⚖️ Mantenimiento</button>
+    </div>
+
+    <div class="carta-grid" id="cartaGrid"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fi">
+      <div><div class="fl">MACRO<span>.</span></div><div class="ft">Viandas con objetivo · Buenos Aires</div></div>
+      <a class="fw" href="https://wa.me/5491100000000" target="_blank">💬 Consultas por WhatsApp</a>
+      <div style="font-size:12px;color:var(--muted);text-align:right">Aptas freezer hasta 30 días<br>Sin conservantes</div>
+    </div>
+  </div>
+</footer>
+
+<!-- MOBILE BAR -->
+<div class="mob-bar" id="mobBar" style="display:none">
+  <div class="mob-inner">
+    <div class="mob-info" id="mobInfo">0 viandas</div>
+    <button class="mob-btn" onclick="toggleCart()">Ver carrito →</button>
+  </div>
+</div>
+
+<!-- CART OVERLAY -->
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cs-head">
+    <div class="cs-head-info"><h2>Tu pedido</h2><p id="cs-sub">Vacío</p></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button id="clearBtn" onclick="clearCart()" title="Vaciar carrito" style="display:none;background:rgba(255,100,100,.08);border:1px solid rgba(255,100,100,.2);color:#FF6464;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;transition:all .2s;" onmouseover="this.style.background='rgba(255,100,100,.18)'" onmouseout="this.style.background='rgba(255,100,100,.08)'">🗑 Vaciar</button>
+      <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+  </div>
+  <div class="cs-disc-bar" id="csDiscBar"><span>🏷️</span><span id="csDiscText"></span></div>
+  <div class="cs-progress">
+    <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+    <div class="prog-text"><span id="progLeft">Agregá 10 viandas para 10% OFF</span><span class="hl" id="progDisc"></span></div>
+  </div>
+  <div class="cs-items" id="csItems">
+    <div class="cs-empty"><span class="ei">🥡</span>Tu carrito está vacío</div>
+  </div>
+  <div class="cs-footer" id="csFooter" style="display:none">
+    <div class="savings-pill" id="savingsPill"></div>
+    <div class="total-row"><span class="tl">Total</span><span class="ta" id="csTotal">$0</span></div>
+    <div class="tv" id="csViandas"></div>
+    <div class="ck-btns">
+      <a class="btn-pay online" id="btnPay" href="https://mpago.la/REEMPLAZAR" target="_blank">💳 Abonar ahora</a>
+      <a class="btn-pay wpp" id="btnWpp" href="#" target="_blank">💬 Pedí por WhatsApp</a>
+    </div>
+    <p class="ck-note">Aceptamos tarjetas, débito y billeteras virtuales.<br>Coordinamos entrega por WhatsApp.</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── REFERRAL ────────────────────────────
+const REF_CONFIG = {
+  bienestar: { name:'Programa Bienestar', color:'#A78BFA', bg:'rgba(167,139,250,.12)', border:'rgba(167,139,250,.25)' },
+  msf:       { name:'Programa MSF',       color:'#FB923C', bg:'rgba(251,146,60,.12)',  border:'rgba(251,146,60,.25)'  },
+};
+const refParam = new URLSearchParams(window.location.search).get('ref')?.toLowerCase();
+const activeRef = REF_CONFIG[refParam] || null;
+
+function initRefBanner(){
+  if(!activeRef) return;
+  const banner = document.createElement('div');
+  banner.id = 'refBanner';
+  banner.style.cssText = `position:fixed;top:56px;left:0;right:0;z-index:450;padding:8px 24px;background:${activeRef.bg};border-bottom:1px solid ${activeRef.border};display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;font-weight:600;color:${activeRef.color};backdrop-filter:blur(8px);`;
+  banner.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:${activeRef.color};display:inline-block;animation:blink 2s infinite"></span> Acceso exclusivo · <strong>${activeRef.name}</strong>`;
+  document.body.prepend(banner);
+  // Push content down a bit
+  document.querySelector('.hero-content').style.paddingTop = '110px';
+}
+const MP    = 'https://mpago.la/REEMPLAZAR';
+const PRICE = 9500;
+// ────────────────────────────────────────
+
+const MENUS = {
+  muscle:{ name:'Masa Muscular',    emoji:'💪', dot:'#BCFF5E' },
+  fat:   { name:'Reducción de Grasa', emoji:'🔥', dot:'#FF7A35' },
+  maint: { name:'Mantenimiento',    emoji:'⚖️', dot:'#4AADFF' },
+};
+
+// ── PLATOS (a la carta) ─────────────────
+const PLATOS = [
+  // MASA MUSCULAR
+  {id:'m1', plan:'muscle', tipo:'Almuerzo', nombre:'Arroz integral + pollo en salsa criolla', desc:'Pechuga de pollo (200g) en salsa criolla de morrón, tomate y cebolla. Arroz integral (180g).'},
+  {id:'m2', plan:'muscle', tipo:'Cena',     nombre:'Estofado de carne vacuna con papas',       desc:'Cuadril en cubos (200g) estofado con papas, zanahoria y caldo sabroso.'},
+  {id:'m3', plan:'muscle', tipo:'Almuerzo', nombre:'Guiso de lentejas con carne',               desc:'Lentejas (200g) con cuadril, zanahoria, papa y laurel. Completo y rendidor.'},
+  {id:'m4', plan:'muscle', tipo:'Cena',     nombre:'Pollo al horno con batata y zapallo',       desc:'Cuarto trasero (220g) al horno con batata y zapallo bañados en jugo de cocción.'},
+  {id:'m5', plan:'muscle', tipo:'Almuerzo', nombre:'Arroz con pollo casero',                    desc:'Muslos de pollo (200g) en caldo con arroz, morrón, arvejas y cebolla.'},
+  {id:'m6', plan:'muscle', tipo:'Cena',     nombre:'Milanesa al horno con puré de batata',      desc:'Milanesa de carne (200g) al horno + puré de batata + brócoli salteado con ajo.'},
+  {id:'m7', plan:'muscle', tipo:'Almuerzo', nombre:'Garbanzos guisados con carne',              desc:'Garbanzos (200g) con carne magra, tomate, pimentón y comino. Arroz integral.'},
+  {id:'m8', plan:'muscle', tipo:'Cena',     nombre:'Merluza en salsa de tomate con polenta',    desc:'Filete de merluza (200g) en salsa de tomate casera. Polenta cremosa (150g).'},
+  {id:'m9', plan:'muscle', tipo:'Almuerzo', nombre:'Guiso de porotos con chorizo colorado',     desc:'Porotos negros (200g) con chorizo colorado, zapallo y zanahoria. Arroz blanco.'},
+  {id:'m10',plan:'muscle', tipo:'Cena',     nombre:'Pechuga en salsa de champiñones',           desc:'Pechuga (200g) en salsa cremosa de champiñones y cebolla. Arroz blanco (150g).'},
+  {id:'m11',plan:'muscle', tipo:'Almuerzo', nombre:'Carne estofada con papas rústicas',         desc:'Paleta o roast beef (200g) estofado con papas y caldo. Ideal para el freezer.'},
+  {id:'m12',plan:'muscle', tipo:'Cena',     nombre:'Tarta de atún y verduras',                  desc:'2 latas de atún, morrón, cebolla y huevo en masa casera. Porción generosa.'},
+  {id:'m13',plan:'muscle', tipo:'Almuerzo', nombre:'Pollo al horno con papas y batata',         desc:'Pollo al horno con papas, batata, cebolla y morrón bañados en jugos de cocción.'},
+  {id:'m14',plan:'muscle', tipo:'Cena',     nombre:'Cazuela de pollo con choclo y zapallo',     desc:'Pollo desmenuzado (180g) en caldo sustancioso con choclo, zapallo y papa.'},
+
+  // REDUCCIÓN
+  {id:'f1', plan:'fat', tipo:'Almuerzo', nombre:'Pechuga al horno con verduras asadas',        desc:'Pechuga (180g) + morrón, zapallito y cebolla asados. 1 papa mediana. Sin salsas grasas.'},
+  {id:'f2', plan:'fat', tipo:'Cena',     nombre:'Merluza en salsa de tomate con brócoli',      desc:'Merluza (200g) en salsa de tomate liviana. Brócoli y coliflor asados. Sin carbos.'},
+  {id:'f3', plan:'fat', tipo:'Almuerzo', nombre:'Bowl caliente de atún y garbanzos',           desc:'2 latas de atún, 100g garbanzos, tomate asado, cebolla morada, pimentón. Tibio.'},
+  {id:'f4', plan:'fat', tipo:'Cena',     nombre:'Pollo al limón con crucíferas',               desc:'Pechuga (180g) al horno con limón y ajo. Brócoli y coliflor asados (300g). Sin carbos.'},
+  {id:'f5', plan:'fat', tipo:'Almuerzo', nombre:'Pollo salteado con verduras y arroz',         desc:'Pechuga en tiras (180g) con zapallito, morrón y cebolla. Solo 80g arroz integral.'},
+  {id:'f6', plan:'fat', tipo:'Cena',     nombre:'Merluza al horno con espinaca salteada',      desc:'Merluza (200g) al horno con limón. Espinaca salteada con ajo (300g). Sin carbos.'},
+  {id:'f7', plan:'fat', tipo:'Almuerzo', nombre:'Carne magra al horno con batata',             desc:'Peceto (180g) al horno + batata y zanahoria asadas. Poca grasa, alta saciedad.'},
+  {id:'f8', plan:'fat', tipo:'Cena',     nombre:'Pollo desmenuzado en salsa de tomate',        desc:'Pechuga desmenuzada (180g) en salsa de tomate liviana con zapallitos. Sin carbos.'},
+  {id:'f9', plan:'fat', tipo:'Almuerzo', nombre:'Lentejas con verduras',                       desc:'Lentejas (150g) con zanahoria, apio, zapallo y puerro. Alta fibra, sin arroz.'},
+  {id:'f10',plan:'fat', tipo:'Cena',     nombre:'Pechuga especiada con verduras asadas',       desc:'Pechuga (180g) con pimentón, comino y ajo. Zapallitos y morrones asados.'},
+  {id:'f11',plan:'fat', tipo:'Almuerzo', nombre:'Cazuela de pollo con verduras',               desc:'Pollo (180g) en caldo liviano con zanahoria, zapallo, apio y puerro.'},
+  {id:'f12',plan:'fat', tipo:'Cena',     nombre:'Carne magra en salsa criolla',                desc:'Cuadril (180g) en salsa criolla de tomate y morrón. Brócoli al horno. Sin carbos.'},
+  {id:'f13',plan:'fat', tipo:'Almuerzo', nombre:'Sopa sustanciosa de verduras y pollo',        desc:'Caldo casero con zapallo, zanahoria, apio, choclo y pollo desmenuzado (150g).'},
+  {id:'f14',plan:'fat', tipo:'Cena',     nombre:'Carne magra con vegetales asados',            desc:'Cuadril o peceto (180g) al horno. Morrón, zapallito y berenjena asados. Sin carbos.'},
+
+  // MANTENIMIENTO
+  {id:'t1', plan:'maint', tipo:'Almuerzo', nombre:'Arroz con pollo casero',                    desc:'Muslos de pollo (170g) en caldo con arroz, morrón, arvejas y cebolla.'},
+  {id:'t2', plan:'maint', tipo:'Cena',     nombre:'Tarta de verduras con queso',               desc:'Zapallito, cebolla y morrón con queso en masa casera. Porción individual.'},
+  {id:'t3', plan:'maint', tipo:'Almuerzo', nombre:'Guiso de carne con papa y zanahoria',        desc:'Carne vacuna (170g) guisada con papa, zanahoria, arvejas y tomate.'},
+  {id:'t4', plan:'maint', tipo:'Cena',     nombre:'Merluza en salsa con puré de batata',        desc:'Merluza (170g) en salsa de tomate casera. Puré de batata (130g).'},
+  {id:'t5', plan:'maint', tipo:'Almuerzo', nombre:'Guiso de porotos con chorizo',               desc:'Porotos negros (170g) con chorizo colorado, zapallo y zanahoria. Muy saciante.'},
+  {id:'t6', plan:'maint', tipo:'Cena',     nombre:'Pollo al horno con papas y morrón',          desc:'Cuarto trasero (170g) al horno con papas y morrón bañados en jugo de cocción.'},
+  {id:'t7', plan:'maint', tipo:'Almuerzo', nombre:'Lentejas con arroz',                         desc:'Lentejas (150g) + arroz integral (100g) + zanahoria y puerro. Proteína vegetal completa.'},
+  {id:'t8', plan:'maint', tipo:'Cena',     nombre:'Carne al horno con batata y zanahoria',      desc:'Nalga o roast beef (170g) al horno con batata y zanahoria.'},
+  {id:'t9', plan:'maint', tipo:'Almuerzo', nombre:'Locro liviano',                              desc:'Maíz blanco, porotos, zapallo, carne magra y chorizo. Versión sin tanta grasa.'},
+  {id:'t10',plan:'maint', tipo:'Cena',     nombre:'Merluza con salsa criolla y papas',          desc:'Merluza (170g) al horno con salsa criolla caliente y papas al vapor (130g).'},
+  {id:'t11',plan:'maint', tipo:'Almuerzo', nombre:'Pollo al horno con batata y zapallo',        desc:'Cuarto trasero (170g) al horno con batata, zapallo y cebolla morada.'},
+  {id:'t12',plan:'maint', tipo:'Cena',     nombre:'Tarta de atún y verduras',                   desc:'2 latas de atún, morrón, cebolla y huevo en masa integral. Porción individual.'},
+  {id:'t13',plan:'maint', tipo:'Almuerzo', nombre:'Estofado de carne con papa',                 desc:'Paleta o roast beef (170g) estofado con papa y zanahoria. El colágeno lo hace perfecto.'},
+  {id:'t14',plan:'maint', tipo:'Cena',     nombre:'Cazuela de pollo con choclo y papa',         desc:'Pollo desmenuzado (160g) en caldo con choclo, zapallo y papa.'},
+];
+
+const platoCounts = {};
+PLATOS.forEach(p=>platoCounts[p.id]=1);
+
+let cart=[];
+let cartaFilter='all';
+
+function fmt(n){return '$'+Math.round(n).toLocaleString('es-AR');}
+function totalViandas(){return cart.reduce((s,i)=>s+i.qty,0);}
+function getDiscount(t){if(t>=28)return.20;if(t>=20)return.15;if(t>=10)return.10;return 0;}
+function discLabel(t){if(t>=28)return'20% OFF';if(t>=20)return'15% OFF';if(t>=10)return'10% OFF';return null;}
+
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
+
+function scrollTo(id, btn){
+  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+// ── Carta render ────────────────────────
+function renderCarta(){
+  const grid=document.getElementById('cartaGrid');
+  const visible=PLATOS.filter(p=>cartaFilter==='all'||p.plan===cartaFilter);
+  grid.innerHTML=visible.map(p=>{
+    const qty=platoCounts[p.id]||1;
+    const icon=p.tipo==='Almuerzo'?'☀️':'🌙';
+    return `<div class="plato-card ${p.plan}">
+      <div class="plato-top">
+        <div class="plato-info">
+          <div class="plato-plan-tag">${MENUS[p.plan].emoji} ${MENUS[p.plan].name}</div>
+          <div class="plato-name">${p.nombre}</div>
+          <span class="plato-meal-type">${icon} ${p.tipo}</span>
+        </div>
+      </div>
+      <div class="plato-desc">${p.desc}</div>
+      <div class="plato-bottom">
+        <div class="plato-price">${fmt(PRICE)}</div>
+        <div class="plato-qty">
+          <button class="pq-btn" onclick="changePlatoQty('${p.id}',-1)">−</button>
+          <span class="pq-val" id="pqv-${p.id}">${qty}</span>
+          <button class="pq-btn" onclick="changePlatoQty('${p.id}',1)">+</button>
+        </div>
+        <button class="plato-add ${p.plan}" onclick="addPlato('${p.id}')">+ Agregar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function changePlatoQty(id, d){
+  platoCounts[id]=Math.max(1,Math.min(20,(platoCounts[id]||1)+d));
+  const el=document.getElementById('pqv-'+id);
+  if(el) el.textContent=platoCounts[id];
+}
+
+function addPlato(id){
+  const p=PLATOS.find(x=>x.id===id);
+  const qty=platoCounts[id]||1;
+  addToCart(p.plan, p.nombre, qty, false);
+  platoCounts[id]=1;
+  const el=document.getElementById('pqv-'+id);
+  if(el) el.textContent=1;
+}
+
+function filterCarta(f, btn){
+  cartaFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.remove('active');});
+  btn.classList.add('active');
+  renderCarta();
+}
+
+// ── Combo add ───────────────────────────
+function addCombo(plan, qty, label, disc){
+  // Combos go in as fixed-price items (discount already baked in)
+  const unitPrice = PRICE * (1 - disc);
+  const existing = cart.find(i=>i.label===label);
+  if(existing){ existing.qty+=qty; }
+  else{ cart.push({plan, label, qty, unitPrice, isCombo:true, disc}); }
+  renderCart(); bumpBadge();
+  const dl=disc>0?` · ${Math.round(disc*100)}% OFF`:'';
+  showToast(`${MENUS[plan].emoji} ${label} agregado${dl}`);
+  toggleCart();
+}
+
+function addToCart(plan, label, qty, openCart=true){
+  const existing=cart.find(i=>i.label===label&&!i.isCombo);
+  if(existing){ existing.qty+=qty; }
+  else{ cart.push({plan, label, qty, unitPrice:PRICE, isCombo:false, disc:0}); }
+  renderCart(); bumpBadge();
+  const total=totalViandas();
+  const dl=discLabel(total);
+  showToast(dl?`${MENUS[plan].emoji} Agregado · ${dl} activo`:`${MENUS[plan].emoji} Agregado al carrito`);
+  if(openCart) toggleCart();
+}
+
+function removeItem(idx){ cart.splice(idx,1); renderCart(); bumpBadge(); }
+function changeCartQty(idx,d){
+  cart[idx].qty=Math.max(1,cart[idx].qty+d);
+  renderCart(); bumpBadge();
+}
+
+function renderCart(){
+  const total=totalViandas();
+
+  // Discount applies to non-combo items based on total cart viandas
+  // Combos already have their discount baked in
+  const comboTotal = cart.filter(i=>i.isCombo).reduce((s,i)=>s+i.qty*i.unitPrice,0);
+  const cartaItems = cart.filter(i=>!i.isCombo);
+  const cartaViandas = cartaItems.reduce((s,i)=>s+i.qty,0);
+  const cartaDisc = getDiscount(total); // discount based on total
+  const cartaBase = cartaItems.reduce((s,i)=>s+i.qty*PRICE,0);
+  const cartaFinal = cartaBase*(1-cartaDisc);
+  const grandTotal = comboTotal + cartaFinal;
+  const grandBase  = cart.reduce((s,i)=>s+i.qty*(i.isCombo?i.unitPrice*1/(1-i.disc||1):PRICE),0); // original without any disc
+  const label=discLabel(total);
+
+  // Progress bar
+  let pct=0,progLeft='',progDisc='';
+  if(total===0){progLeft='Agregá 10 viandas para 10% OFF';}
+  else if(total<10){pct=(total/10)*33;progLeft=`${10-total} viandas más → 10% OFF`;}
+  else if(total<20){pct=33+((total-10)/10)*33;progLeft=`${20-total} viandas más → 15% OFF`;progDisc='10% OFF';}
+  else if(total<28){pct=66+((total-20)/8)*34;progLeft=`${28-total} viandas más → 20% OFF`;progDisc='15% OFF';}
+  else{pct=100;progLeft='¡Descuento máximo!';progDisc='20% OFF';}
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progLeft').textContent=progLeft;
+  document.getElementById('progDisc').textContent=progDisc;
+
+  document.getElementById('clearBtn').style.display = cart.length ? 'block' : 'none';
+
+  // Items HTML
+  const csItems=document.getElementById('csItems');
+  if(!cart.length){
+    csItems.innerHTML=`<div class="cs-empty"><span class="ei">🥡</span>Tu carrito está vacío</div>`;
+    document.getElementById('csFooter').style.display='none';
+    document.getElementById('cs-sub').textContent='Vacío';
+    document.getElementById('csDiscBar').classList.remove('show');
+  } else {
+    csItems.innerHTML=cart.map((item,i)=>{
+      const m=MENUS[item.plan];
+      const lineTotal=item.qty*item.unitPrice*(item.isCombo?1:(1-cartaDisc));
+      return `<div class="cart-item">
+        <div class="ci-dot" style="background:${m.dot}"></div>
+        <div class="ci-info">
+          <div class="ci-name">${m.emoji} ${item.label}</div>
+          <div class="ci-sub">${item.qty} × ${fmt(item.isCombo?item.unitPrice:PRICE*(1-cartaDisc))}${item.isCombo&&item.disc>0?' · '+Math.round(item.disc*100)+'% OFF incluido':''}</div>
+        </div>
+        <div class="ci-qty">
+          <button class="ciq-btn" onclick="changeCartQty(${i},-1)">−</button>
+          <span class="ciq-val">${item.qty}</span>
+          <button class="ciq-btn" onclick="changeCartQty(${i},1)">+</button>
+        </div>
+        <div class="ci-right">
+          <div class="ci-price">${fmt(lineTotal)}</div>
+          <button class="ci-del" onclick="removeItem(${i})">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('csFooter').style.display='block';
+    document.getElementById('cs-sub').textContent=`${total} vianda${total>1?'s':''} · ${label||'sin descuento'}`;
+
+    // Discount bar hint
+    const db=document.getElementById('csDiscBar'),dt=document.getElementById('csDiscText');
+    if(total>0&&total<10){dt.textContent=`Sumá ${10-total} vianda${10-total>1?'s':''} más y conseguís 10% OFF`;db.classList.add('show');}
+    else if(total>=10&&total<20){dt.textContent=`${20-total} viandas más para 15% OFF`;db.classList.add('show');}
+    else{db.classList.remove('show');}
+
+    // Savings
+    const cartaSaved = cartaBase - cartaFinal;
+    const sp=document.getElementById('savingsPill');
+    if(cartaSaved>0){sp.innerHTML=`🎉 Ahorrás <strong>${fmt(cartaSaved)}</strong> con el ${label}`;sp.classList.add('show');}
+    else{sp.classList.remove('show');}
+
+    document.getElementById('csTotal').textContent=fmt(grandTotal);
+    document.getElementById('csViandas').textContent=`${total} viandas en total`;
+
+    // WPP msg
+    let msg='¡Hola! Quiero hacer el siguiente pedido de MACRO:\n\n';
+    if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n\n`;
+    const byPlan={};
+    cart.forEach(i=>{if(!byPlan[i.plan])byPlan[i.plan]=[];byPlan[i.plan].push(i);});
+    Object.keys(byPlan).forEach(plan=>{
+      const m=MENUS[plan];
+      msg+=`${m.emoji} *${m.name}*:\n`;
+      byPlan[plan].forEach(i=>msg+=`   • ${i.label} (×${i.qty})\n`);
+    });
+    if(label&&cartaSaved>0) msg+=`\n🏷 Descuento: *${label}* — Ahorrás ${fmt(cartaSaved)}\n`;
+    msg+=`\n*TOTAL: ${fmt(grandTotal)}*\n\n¿Cómo coordino el pago y la entrega?`;
+    const wl=`https://wa.me/${WPP}?text=${encodeURIComponent(msg)}`;
+    document.getElementById('btnWpp').href=wl;
+    document.getElementById('btnPay').href=MP;
+  }
+
+  // Mobile bar
+  const mb=document.getElementById('mobBar');
+  if(total){mb.style.display='block';document.getElementById('mobInfo').textContent=`${total} vianda${total>1?'s':''} · ${fmt(grandTotal)}`;}
+  else{mb.style.display='none';}
+}
+
+function clearCart(){
+  if(!cart.length) return;
+  cart=[];
+  renderCart(); bumpBadge();
+  showToast('🗑 Carrito vaciado');
+}
+
+function bumpBadge(){
+  const total=totalViandas();
+  const b=document.getElementById('cartBadge');
+  b.textContent=total;b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump');
+}
+
+function toggleCart(){
+  document.getElementById('cartSidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open');
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// Init
+initRefBanner();
+renderCarta();
+renderCart();
+</script>
+</body>
+</html>
