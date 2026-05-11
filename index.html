@@ -270,6 +270,10 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
   .carta-grid{grid-template-columns:1fr;}
   .cp-options{grid-template-columns:repeat(2,1fr);}
 }
+.plato-card.especial::before{background:#F59E0B;}
+.especial .plato-plan-tag{color:#F59E0B;}
+.especial .plato-add{background:rgba(245,158,11,.12);color:#F59E0B;}
+.especial .plato-add:hover{background:#F59E0B;color:var(--black);}
 </style>
 </head>
 <body>
@@ -321,6 +325,9 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
     </button>
     <button class="tab-btn" onclick="scrollTo('carta',this)">
       🍽 A la carta <span class="tb-num">42 platos</span>
+    </button>
+    <button class="tab-btn" onclick="scrollTo('especiales',this)">
+      ✨ Especiales <span class="tb-num">14 platos</span>
     </button>
   </div>
 </div>
@@ -552,6 +559,25 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
   </div>
 </section>
 
+<!-- ══════════════════════════════
+     SECCIÓN 3: ESPECIALES
+══════════════════════════════ -->
+<section class="sec" id="especiales" style="border-top:1px solid var(--border);padding-top:72px;">
+  <div class="wrap">
+    <div class="sec-eye" style="color:#F59E0B">✨ Especiales</div>
+    <h2 class="sec-title">Sin restricciones,<br><span style="color:#F59E0B">con sabor</span></h2>
+    <p class="sec-sub">Platos diseñados para cumplir las tres restricciones a la vez. Aptos freezer, listos para calentar.</p>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 28px;">
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);font-size:12px;font-weight:700;color:#F59E0B;">🌾 Bajo en gluten</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);font-size:12px;font-weight:700;color:#F59E0B;">🥩 Sin carnes rojas</span>
+      <span style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:50px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);font-size:12px;font-weight:700;color:#F59E0B;">🥛 Sin lácteos</span>
+    </div>
+
+    <div class="carta-grid" id="especialesGrid"></div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div class="fi">
@@ -627,9 +653,10 @@ const PRICE = 9500;
 // ────────────────────────────────────────
 
 const MENUS = {
-  muscle:{ name:'Masa Muscular',    emoji:'💪', dot:'#BCFF5E' },
-  fat:   { name:'Reducción de Grasa', emoji:'🔥', dot:'#FF7A35' },
-  maint: { name:'Mantenimiento',    emoji:'⚖️', dot:'#4AADFF' },
+  muscle:  { name:'Masa Muscular',      emoji:'💪', dot:'#BCFF5E' },
+  fat:     { name:'Reducción de Grasa', emoji:'🔥', dot:'#FF7A35' },
+  maint:   { name:'Mantenimiento',      emoji:'⚖️', dot:'#4AADFF' },
+  especial:{ name:'Especial',           emoji:'✨', dot:'#F59E0B' },
 };
 
 // ── PLATOS (a la carta) ─────────────────
@@ -681,6 +708,22 @@ const PLATOS = [
   {id:'t12',plan:'maint', tipo:'Cena',     nombre:'Tarta de atún y verduras',                   desc:'2 latas de atún, morrón, cebolla y huevo en masa integral. Porción individual.'},
   {id:'t13',plan:'maint', tipo:'Almuerzo', nombre:'Estofado de carne con papa',                 desc:'Paleta o roast beef (170g) estofado con papa y zanahoria. El colágeno lo hace perfecto.'},
   {id:'t14',plan:'maint', tipo:'Cena',     nombre:'Cazuela de pollo con choclo y papa',         desc:'Pollo desmenuzado (160g) en caldo con choclo, zapallo y papa.'},
+
+  // ESPECIALES
+  {id:'e1', plan:'especial', tipo:'Almuerzo', nombre:'Arroz integral con pollo en salsa criolla',      desc:'Pechuga (180g) en salsa criolla de morrón y tomate. Arroz integral.'},
+  {id:'e2', plan:'especial', tipo:'Cena',     nombre:'Pollo desmenuzado en salsa de tomate con polenta', desc:'Pollo (170g) en salsa de tomate casera. Polenta cremosa sin lácteos.'},
+  {id:'e3', plan:'especial', tipo:'Almuerzo', nombre:'Guiso de lentejas con verduras',                 desc:'Lentejas (180g) con zanahoria, apio, puerro y zapallo. 100% vegetal.'},
+  {id:'e4', plan:'especial', tipo:'Cena',     nombre:'Pollo al horno con batata y zapallo',            desc:'Pechuga (180g) al horno con batata y zapallo bañados en jugos de cocción.'},
+  {id:'e5', plan:'especial', tipo:'Almuerzo', nombre:'Garbanzos guisados con zapallo y puerro',        desc:'Garbanzos (180g) con zapallo, zanahoria, puerro y cúrcuma. Vegetal completo.'},
+  {id:'e6', plan:'especial', tipo:'Cena',     nombre:'Cazuela de pollo con choclo y papa',             desc:'Pollo desmenuzado (170g) en caldo con choclo, papa y zapallo.'},
+  {id:'e7', plan:'especial', tipo:'Almuerzo', nombre:'Quinoa con pollo y verduras asadas',             desc:'Quinoa (150g) con pollo desmenuzado (150g), morrón y zapallito asados.'},
+  {id:'e8', plan:'especial', tipo:'Cena',     nombre:'Pollo al horno con verduras asadas',             desc:'Pollo (180g) al horno con morrón, zapallito, cebolla y ajo.'},
+  {id:'e9', plan:'especial', tipo:'Almuerzo', nombre:'Arroz con pollo casero',                         desc:'Muslos de pollo (170g) en caldo con arroz, morrón y arvejas.'},
+  {id:'e10',plan:'especial', tipo:'Cena',     nombre:'Guiso de zapallo con lentejas y cúrcuma',        desc:'Zapallo y lentejas (150g) con cúrcuma, comino y caldo liviano. Vegetal.'},
+  {id:'e11',plan:'especial', tipo:'Almuerzo', nombre:'Guiso de porotos negros con verduras',           desc:'Porotos negros (180g) con zapallo, zanahoria y puerro. Vegetal.'},
+  {id:'e12',plan:'especial', tipo:'Cena',     nombre:'Pollo en salsa de champiñones (sin crema)',      desc:'Pollo (170g) en salsa de champiñones ligada con caldo, sin crema. Con arroz.'},
+  {id:'e13',plan:'especial', tipo:'Almuerzo', nombre:'Cazuela de pollo con morrón y choclo',           desc:'Pollo (170g) estofado con morrón, choclo y cebolla.'},
+  {id:'e14',plan:'especial', tipo:'Cena',     nombre:'Cazuela de pollo con papa y zanahoria',          desc:'Pollo desmenuzado (170g) en caldo con papa, zanahoria y morrón.'},
 ];
 
 const platoCounts = {};
@@ -705,7 +748,7 @@ function scrollTo(id, btn){
 // ── Carta render ────────────────────────
 function renderCarta(){
   const grid=document.getElementById('cartaGrid');
-  const visible=PLATOS.filter(p=>cartaFilter==='all'||p.plan===cartaFilter);
+  const visible=PLATOS.filter(p=>p.plan!=='especial'&&(cartaFilter==='all'||p.plan===cartaFilter));
   grid.innerHTML=visible.map(p=>{
     const qty=platoCounts[p.id]||1;
     const icon=p.tipo==='Almuerzo'?'☀️':'🌙';
@@ -751,6 +794,34 @@ function filterCarta(f, btn){
   document.querySelectorAll('.filter-btn').forEach(b=>{b.classList.remove('active');});
   btn.classList.add('active');
   renderCarta();
+}
+
+function renderEspeciales(){
+  const grid=document.getElementById('especialesGrid');
+  const visible=PLATOS.filter(p=>p.plan==='especial');
+  grid.innerHTML=visible.map(p=>{
+    const qty=platoCounts[p.id]||1;
+    const icon=p.tipo==='Almuerzo'?'☀️':'🌙';
+    return `<div class="plato-card especial">
+      <div class="plato-top">
+        <div class="plato-info">
+          <div class="plato-plan-tag">✨ Especial</div>
+          <div class="plato-name">${p.nombre}</div>
+          <span class="plato-meal-type">${icon} ${p.tipo}</span>
+        </div>
+      </div>
+      <div class="plato-desc">${p.desc}</div>
+      <div class="plato-bottom">
+        <div class="plato-price">${fmt(PRICE)}</div>
+        <div class="plato-qty">
+          <button class="pq-btn" onclick="changePlatoQty('${p.id}',-1)">−</button>
+          <span class="pq-val" id="pqv-${p.id}">${qty}</span>
+          <button class="pq-btn" onclick="changePlatoQty('${p.id}',1)">+</button>
+        </div>
+        <button class="plato-add especial" onclick="addPlato('${p.id}')">+ Agregar</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ── Combo add ───────────────────────────
@@ -909,6 +980,7 @@ function showToast(msg){
 // Init
 initRefBanner();
 renderCarta();
+renderEspeciales();
 renderCart();
 </script>
 </body>
