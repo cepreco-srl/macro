@@ -320,13 +320,13 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
 <!-- SECTION TABS -->
 <div class="section-tabs">
   <div class="tabs-inner">
-    <button class="tab-btn active" onclick="scrollTo('combos',this)">
+    <button class="tab-btn active" onclick="scrollToSection('combos',this)">
       📦 Combos <span class="tb-num">7 · 14 · 21 · 28</span>
     </button>
-    <button class="tab-btn" onclick="scrollTo('carta',this)">
+    <button class="tab-btn" onclick="scrollToSection('carta',this)">
       🍽 A la carta <span class="tb-num">37 platos</span>
     </button>
-    <button class="tab-btn" onclick="scrollTo('especiales',this)">
+    <button class="tab-btn" onclick="scrollToSection('especiales',this)">
       ✨ Especiales <span class="tb-num">15 platos</span>
     </button>
   </div>
@@ -735,7 +735,7 @@ function discLabel(t){if(t>=28)return'20% OFF';if(t>=20)return'15% OFF';if(t>=10
 
 window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>60));
 
-function scrollTo(id, btn){
+function scrollToSection(id, btn){
   document.getElementById(id).scrollIntoView({behavior:'smooth'});
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
