@@ -983,9 +983,9 @@ function handlePay(type){
   const cartaSaved = cartaBase-cartaFinal;
 
   let msg='¡Hola! Quiero hacer el siguiente pedido de MACRO:\n\n';
-  msg+=`👤 *${nombre}*\n`;
-  msg+=`📍 ${direccion}${piso?', '+piso:''}\n`;
-  msg+=`📞 ${telefono}\n`;
+  msg+=`👤 *Nombre y apellido:* ${nombre}\n`;
+  msg+=`📍 *Dirección:* ${direccion}${piso?', '+piso:''}\n`;
+  msg+=`📞 *Teléfono:* ${telefono}\n`;
   if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n`;
   msg+=`\n━━━━━━━━━━━━━━━━━━━\n`;
   const byPlan={};
