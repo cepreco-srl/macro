@@ -985,17 +985,36 @@ function handlePay(type){
   let msg='¡Hola! Quiero hacer el siguiente pedido de MACRO:\n\n';
   msg+=`👤 *${nombre}*\n`;
   msg+=`📍 ${direccion}${piso?', '+piso:''}\n`;
-  msg+=`📞 ${telefono}\n\n`;
-  if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n\n`;
+  msg+=`📞 ${telefono}\n`;
+  if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n`;
+  msg+=`\n━━━━━━━━━━━━━━━━━━━\n`;
   const byPlan={};
   cart.forEach(i=>{if(!byPlan[i.plan])byPlan[i.plan]=[];byPlan[i.plan].push(i);});
   Object.keys(byPlan).forEach(plan=>{
     const m=MENUS[plan];
-    msg+=`${m.emoji} *${m.name}*:\n`;
-    byPlan[plan].forEach(i=>msg+=`   • ${i.label} (×${i.qty})\n`);
+    msg+=`\n${m.emoji} *${m.name.toUpperCase()}*\n`;
+    byPlan[plan].forEach(i=>{
+      if(i.isCombo){
+        msg+=`📦 *${i.label}*\n`;
+        if(i.disc>0) msg+=`   ${Math.round(i.disc*100)}% OFF incluido\n`;
+        msg+=`   ${fmt(i.unitPrice)} c/u × ${i.qty} viandas = *${fmt(i.qty*i.unitPrice)}*\n`;
+      } else {
+        const plato=PLATOS.find(p=>p.nombre===i.label&&p.plan===plan);
+        const icon=plato?.tipo==='Almuerzo'?'☀️':'🌙';
+        const unitFinal=PRICE*(1-cartaDisc);
+        msg+=`${icon} *${i.label}*`;
+        if(i.qty>1) msg+=` ×${i.qty}`;
+        msg+=`\n`;
+        if(plato?.desc) msg+=`   _${plato.desc}_\n`;
+        msg+=`   ${fmt(unitFinal)} c/u = *${fmt(i.qty*unitFinal)}*\n`;
+      }
+    });
   });
-  if(label&&cartaSaved>0) msg+=`\n🏷 Descuento: *${label}* — Ahorrás ${fmt(cartaSaved)}\n`;
-  msg+=`\n*TOTAL: ${fmt(grandTotal)}*\n\n¿Cómo coordino el pago y la entrega?`;
+  msg+=`\n━━━━━━━━━━━━━━━━━━━\n`;
+  if(label&&cartaSaved>0) msg+=`🏷 Descuento: *${label}* — Ahorrás ${fmt(cartaSaved)}\n`;
+  msg+=`💰 *TOTAL: ${fmt(grandTotal)}*\n`;
+  msg+=`━━━━━━━━━━━━━━━━━━━\n\n`;
+  msg+=`¿Cómo coordino el pago y la entrega?`;
   window.open(`https://wa.me/${WPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
