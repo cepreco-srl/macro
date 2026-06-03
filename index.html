@@ -274,6 +274,13 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
 .especial .plato-plan-tag{color:#F59E0B;}
 .especial .plato-add{background:rgba(245,158,11,.12);color:#F59E0B;}
 .especial .plato-add:hover{background:#F59E0B;color:var(--black);}
+.ck-form{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;padding:12px 14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;}
+.ck-form-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2);margin-bottom:2px;}
+.ck-input{background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;font-size:13px;color:var(--white);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%;box-sizing:border-box;}
+.ck-input::placeholder{color:var(--muted);}
+.ck-input:focus{border-color:rgba(255,255,255,.2);}
+.ck-input.error{border-color:rgba(255,100,100,.6);background:rgba(255,100,100,.05);}
+.ck-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 </style>
 </head>
 <body>
@@ -618,9 +625,18 @@ footer{border-top:1px solid var(--border);padding:40px 0;}
     <div class="savings-pill" id="savingsPill"></div>
     <div class="total-row"><span class="tl">Total</span><span class="ta" id="csTotal">$0</span></div>
     <div class="tv" id="csViandas"></div>
+    <div class="ck-form">
+      <div class="ck-form-label">📦 Datos de entrega</div>
+      <input class="ck-input" id="ckNombre" type="text" placeholder="Nombre y apellido *" oninput="clearInputError(this)">
+      <input class="ck-input" id="ckDireccion" type="text" placeholder="Dirección de entrega *" oninput="clearInputError(this)">
+      <div class="ck-row">
+        <input class="ck-input" id="ckPiso" type="text" placeholder="Piso / Depto">
+        <input class="ck-input" id="ckTelefono" type="tel" placeholder="Teléfono *" oninput="clearInputError(this)">
+      </div>
+    </div>
     <div class="ck-btns">
-      <a class="btn-pay online" id="btnPay" href="https://mpago.la/REEMPLAZAR" target="_blank">💳 Abonar ahora</a>
-      <a class="btn-pay wpp" id="btnWpp" href="#" target="_blank">💬 Pedí por WhatsApp</a>
+      <button class="btn-pay online" onclick="handlePay('mp')">💳 Abonar ahora</button>
+      <button class="btn-pay wpp" onclick="handlePay('wpp')">💬 Pedí por WhatsApp</button>
     </div>
     <p class="ck-note">Aceptamos tarjetas, débito y billeteras virtuales.<br>Coordinamos entrega por WhatsApp.</p>
   </div>
@@ -926,27 +942,62 @@ function renderCart(){
     document.getElementById('csTotal').textContent=fmt(grandTotal);
     document.getElementById('csViandas').textContent=`${total} viandas en total`;
 
-    // WPP msg
-    let msg='¡Hola! Quiero hacer el siguiente pedido de MACRO:\n\n';
-    if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n\n`;
-    const byPlan={};
-    cart.forEach(i=>{if(!byPlan[i.plan])byPlan[i.plan]=[];byPlan[i.plan].push(i);});
-    Object.keys(byPlan).forEach(plan=>{
-      const m=MENUS[plan];
-      msg+=`${m.emoji} *${m.name}*:\n`;
-      byPlan[plan].forEach(i=>msg+=`   • ${i.label} (×${i.qty})\n`);
-    });
-    if(label&&cartaSaved>0) msg+=`\n🏷 Descuento: *${label}* — Ahorrás ${fmt(cartaSaved)}\n`;
-    msg+=`\n*TOTAL: ${fmt(grandTotal)}*\n\n¿Cómo coordino el pago y la entrega?`;
-    const wl=`https://wa.me/${WPP}?text=${encodeURIComponent(msg)}`;
-    document.getElementById('btnWpp').href=wl;
-    document.getElementById('btnPay').href=MP;
   }
 
   // Mobile bar
   const mb=document.getElementById('mobBar');
   if(total){mb.style.display='block';document.getElementById('mobInfo').textContent=`${total} vianda${total>1?'s':''} · ${fmt(grandTotal)}`;}
   else{mb.style.display='none';}
+}
+
+function clearInputError(el){ el.classList.remove('error'); }
+
+function handlePay(type){
+  const elNombre  = document.getElementById('ckNombre');
+  const elDir     = document.getElementById('ckDireccion');
+  const elTel     = document.getElementById('ckTelefono');
+  let valid = true;
+  [elNombre, elDir, elTel].forEach(el=>{
+    if(!el.value.trim()){ el.classList.add('error'); valid=false; }
+    else { el.classList.remove('error'); }
+  });
+  if(!valid){
+    showToast('⚠️ Completá nombre, dirección y teléfono');
+    document.querySelector('.ck-form').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  const nombre    = elNombre.value.trim();
+  const direccion = elDir.value.trim();
+  const piso      = document.getElementById('ckPiso').value.trim();
+  const telefono  = elTel.value.trim();
+
+  if(type==='mp'){ window.open(MP,'_blank'); return; }
+
+  const total      = totalViandas();
+  const cartaItems = cart.filter(i=>!i.isCombo);
+  const cartaDisc  = getDiscount(total);
+  const cartaBase  = cartaItems.reduce((s,i)=>s+i.qty*PRICE,0);
+  const cartaFinal = cartaBase*(1-cartaDisc);
+  const comboTotal = cart.filter(i=>i.isCombo).reduce((s,i)=>s+i.qty*i.unitPrice,0);
+  const grandTotal = comboTotal+cartaFinal;
+  const label      = discLabel(total);
+  const cartaSaved = cartaBase-cartaFinal;
+
+  let msg='¡Hola! Quiero hacer el siguiente pedido de MACRO:\n\n';
+  msg+=`👤 *${nombre}*\n`;
+  msg+=`📍 ${direccion}${piso?', '+piso:''}\n`;
+  msg+=`📞 ${telefono}\n\n`;
+  if(activeRef) msg+=`📌 *Origen: ${activeRef.name}*\n\n`;
+  const byPlan={};
+  cart.forEach(i=>{if(!byPlan[i.plan])byPlan[i.plan]=[];byPlan[i.plan].push(i);});
+  Object.keys(byPlan).forEach(plan=>{
+    const m=MENUS[plan];
+    msg+=`${m.emoji} *${m.name}*:\n`;
+    byPlan[plan].forEach(i=>msg+=`   • ${i.label} (×${i.qty})\n`);
+  });
+  if(label&&cartaSaved>0) msg+=`\n🏷 Descuento: *${label}* — Ahorrás ${fmt(cartaSaved)}\n`;
+  msg+=`\n*TOTAL: ${fmt(grandTotal)}*\n\n¿Cómo coordino el pago y la entrega?`;
+  window.open(`https://wa.me/${WPP}?text=${encodeURIComponent(msg)}`,'_blank');
 }
 
 function clearCart(){
